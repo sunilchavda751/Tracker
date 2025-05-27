@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Compact Year Tracker</title>
+  <!-- Allow zooming and scaling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, maximum-scale=3.0">
+  <title>Zoomable Year Tracker</title>
   <style>
     body {
       margin: 0;
@@ -41,6 +42,7 @@
       flex-wrap: wrap;
       margin-bottom: 20px;
       padding: 0 6px;
+      max-width: 100%;
     }
 
     .box {
