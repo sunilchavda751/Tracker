@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobile responsiveness added -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Compact Year Tracker</title>
   <style>
     body {
@@ -39,8 +39,8 @@
       justify-content: center;
       gap: 2px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
-      padding: 0 10px;
+      margin-bottom: 20px;
+      padding: 0 6px;
     }
 
     .box {
@@ -63,7 +63,7 @@
 
     .calendar {
       display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 3x4 layout for mobile fit */
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
       gap: 10px;
       margin: 10px auto 30px;
       padding: 0 10px;
@@ -74,7 +74,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .month-number {
@@ -97,7 +97,6 @@
     .day.active {
       background-color: #22d3ee;
     }
-
   </style>
 </head>
 <body>
