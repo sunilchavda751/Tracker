@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobile responsiveness added -->
   <title>Compact Year Tracker</title>
   <style>
     body {
@@ -39,20 +39,20 @@
       justify-content: center;
       gap: 2px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
-      max-width: 95vw;
+      margin-bottom: 16px;
+      padding: 0 10px;
     }
 
     .box {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       background-color: #1e1e1e;
       border: 1px solid #333;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #aaa;
-      font-size: 9px;
+      font-size: 8px;
     }
 
     .box.active {
@@ -63,10 +63,11 @@
 
     .calendar {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      grid-template-columns: repeat(4, 1fr); /* 3x4 layout for mobile fit */
       gap: 10px;
-      padding: 10px;
-      margin: 10px 5px;
+      margin: 10px auto 30px;
+      padding: 0 10px;
+      max-width: 100%;
     }
 
     .month {
@@ -83,115 +84,101 @@
 
     .days {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 2px;
+      grid-template-columns: repeat(6, auto);
+      gap: 1px;
     }
 
     .day {
-      width: 10px;
-      height: 10px;
-      background-color: #222;
+      width: 6px;
+      height: 6px;
+      background-color: #1e1e1e;
     }
 
-    @media (max-width: 500px) {
-      .box {
-        width: 12px;
-        height: 12px;
-        font-size: 8px;
-      }
-
-      .calendar {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-      }
-
-      .days {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 2px;
-      }
+    .day.active {
+      background-color: #22d3ee;
     }
+
   </style>
 </head>
 <body>
-  <h1 id="date">Loading...</h1>
+
+  <h1 id="currentDate">Loading...</h1>
 
   <div class="bar">
-    <div class="bar-label" id="monthLabel">[Month - 7 left]</div>
+    <div class="bar-label" id="monthLabel"></div>
     <div class="bar-boxes" id="monthBar"></div>
   </div>
 
   <div class="bar">
-    <div class="bar-label" id="weekLabel">[Week - 30 left]</div>
+    <div class="bar-label" id="weekLabel"></div>
     <div class="bar-boxes" id="weekBar"></div>
   </div>
 
   <div class="bar">
-    <div class="bar-label" id="dayLabel">[Day - 218 left]</div>
-    <div class="calendar" id="calendar"></div>
+    <div class="bar-label" id="dayLabel"></div>
   </div>
 
+  <div class="calendar" id="calendarGrid"></div>
+
   <script>
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const week = Math.ceil((getDayOfYear(today) + new Date(year, 0, 1).getDay()) / 7);
-    const day = getDayOfYear(today);
+    const now = new Date();
+    const year = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+    const currentDate = now.getDate();
+    const start = new Date(year, 0, 0);
+    const dayOfYear = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    const currentWeek = Math.ceil((dayOfYear + start.getDay() + 1) / 7);
 
-    document.getElementById("date").innerText = `${today.getDate()}/${month}/${year}`;
-    document.getElementById("monthLabel").innerText = `[Month - ${12 - month} left]`;
-    document.getElementById("weekLabel").innerText = `[Week - ${52 - week} left]`;
-    document.getElementById("dayLabel").innerText = `[Day - ${365 - day} left]`;
+    document.getElementById("currentDate").innerText = `${currentDate}/${currentMonth}/${year}`;
+    document.getElementById("monthLabel").innerText = `[ Month - ${12 - currentMonth} left ]`;
+    document.getElementById("weekLabel").innerText = `[ Week - ${52 - currentWeek} left ]`;
+    document.getElementById("dayLabel").innerText = `[ Day - ${365 - dayOfYear} left ]`;
 
-    function getDayOfYear(date) {
-      const start = new Date(date.getFullYear(), 0, 0);
-      const diff = date - start;
-      return Math.floor(diff / (1000 * 60 * 60 * 24));
-    }
-
-    function createBar(id, total, active) {
-      const bar = document.getElementById(id);
+    function createBar(containerId, total, active) {
+      const container = document.getElementById(containerId);
       for (let i = 1; i <= total; i++) {
         const box = document.createElement("div");
         box.className = "box";
-        box.textContent = i;
+        box.innerText = i;
         if (i === active) box.classList.add("active");
-        bar.appendChild(box);
+        container.appendChild(box);
       }
     }
 
-    function createCalendar(currentDay) {
-      const calendar = document.getElementById("calendar");
-      let dayCount = 1;
-      for (let m = 1; m <= 12; m++) {
-        const month = document.createElement("div");
-        month.className = "month";
+    function createCalendar() {
+      const grid = document.getElementById("calendarGrid");
+      const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      let dayCounter = 1;
 
-        const monthNumber = document.createElement("div");
-        monthNumber.className = "month-number";
-        monthNumber.textContent = m;
-        month.appendChild(monthNumber);
+      for (let m = 0; m < 12; m++) {
+        const monthDiv = document.createElement("div");
+        monthDiv.className = "month";
 
-        const days = document.createElement("div");
-        days.className = "days";
+        const label = document.createElement("div");
+        label.className = "month-number";
+        label.innerText = m + 1;
+        monthDiv.appendChild(label);
 
-        for (let d = 1; d <= 30; d++) {
-          const dayBox = document.createElement("div");
-          dayBox.className = "day";
-          if (dayCount === currentDay) {
-            dayBox.style.backgroundColor = "#22d3ee";
-          }
-          dayCount++;
-          days.appendChild(dayBox);
+        const daysWrap = document.createElement("div");
+        daysWrap.className = "days";
+
+        for (let d = 1; d <= monthDays[m]; d++) {
+          const dBox = document.createElement("div");
+          dBox.className = "day";
+          if (dayCounter === dayOfYear) dBox.classList.add("active");
+          daysWrap.appendChild(dBox);
+          dayCounter++;
         }
 
-        month.appendChild(days);
-        calendar.appendChild(month);
+        monthDiv.appendChild(daysWrap);
+        grid.appendChild(monthDiv);
       }
     }
 
-    createBar("monthBar", 12, month);
-    createBar("weekBar", 52, week);
-    createCalendar(day);
+    createBar("monthBar", 12, currentMonth);
+    createBar("weekBar", 52, currentWeek);
+    createCalendar();
   </script>
+
 </body>
 </html>
